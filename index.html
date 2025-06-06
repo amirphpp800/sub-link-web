@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدیریت ساب اسکریپشن</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #007AFF, #5AC8FA);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #0056CC, #4A9FD9);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('bg.jpg') center center/cover fixed;
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        /* Header Styles */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .logo-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .logo h1 {
+            color: white;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .logo p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Step Container */
+        .step-container {
+            margin-bottom: 40px;
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.5s ease;
+        }
+
+        .step-container.hidden {
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+            position: absolute;
+            width: 100%;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #007AFF, #5AC8FA);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 5px 15px rgba(0, 122, 255, 0.4);
+        }
+
+        .step-header h2 {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 600;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 12px;
+            padding: 8px 16px;
+            color: white;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-3px);
+        }
+
+        /* Subscription Cards - ساده و کنار هم */
+        .subscription-cards {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: nowrap;
+            margin-bottom: 20px;
+        }
+
+        .sub-card {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            padding: 15px 25px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            flex: 1;
+            max-width: 150px;
+        }
+
+        .sub-card:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .sub-card h3 {
+            color: #333;
+            font-size: 1rem;
+            text-align: center;
+            font-weight: 600;
+            text-shadow: none;
+            margin: 0;
+        }
+
+        /* Selected Sub Info */
+        .selected-sub-info {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .info-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 122, 255, 0.25);
+            border: 1px solid rgba(0, 122, 255, 0.4);
+            border-radius: 25px;
+            padding: 12px 25px;
+            color: white;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* OS Categories */
+        .os-category {
+            margin-bottom: 30px;
+        }
+
+        .os-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 600;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .os-icon {
+            font-size: 1.5rem;
+        }
+
+        .os-icon-img {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .app-card {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .app-card:hover {
+            transform: translateY(-5px);
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .app-icon {
+            margin-bottom: 15px;
+        }
+
+        .app-icon img {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .app-info h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: white;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+        }
+
+        .app-info p {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* App specific colors - All white backgrounds */
+
+        /* Manual Links Section */
+        .manual-links-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 30px 0;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .manual-links-content h3 {
+            color: white;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .link-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .link-item h4 {
+            color: white;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .link-display {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .subscription-link {
+            color: #5AC8FA;
+            text-decoration: none;
+            font-family: monospace;
+            font-size: 0.85rem;
+            direction: ltr;
+            text-align: left;
+            display: block;
+            word-break: break-all;
+            line-height: 1.4;
+            transition: color 0.3s ease;
+        }
+
+        .subscription-link:hover {
+            color: #007AFF;
+            text-decoration: underline;
+        }
+
+        .link-container {
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        .link-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: white;
+            font-size: 0.9rem;
+            font-family: monospace;
+            direction: ltr;
+            text-align: left;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .link-input:focus {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #007AFF, #5AC8FA);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
+            background: linear-gradient(135deg, #0056CC, #4A9FD9);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Help Section */
+        .help-section {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-top: 40px;
+        }
+
+        .help-content h3 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .help-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .help-step {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .help-number {
+            background: linear-gradient(135deg, #007AFF, #5AC8FA);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .help-step p {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.5;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .manual-links-section {
+                margin: 20px 0;
+                padding: 20px;
+            }
+
+            .link-container {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .copy-btn {
+                padding: 12px 20px;
+            }
+
+            .logo {
+                padding: 20px;
+            }
+
+            .logo h1 {
+                font-size: 1.8rem;
+            }
+
+            .subscription-cards {
+                gap: 8px;
+            }
+
+            .sub-card {
+                max-width: 120px;
+                padding: 12px 20px;
+            }
+
+            .sub-card h3 {
+                font-size: 0.9rem;
+            }
+
+            .app-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 12px;
+            }
+
+            .step-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .back-btn {
+                position: static;
+                align-self: flex-start;
+            }
+
+            .help-steps {
+                grid-template-columns: 1fr;
+            }
+
+            .os-header {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .app-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .subscription-cards {
+                gap: 6px;
+            }
+
+            .sub-card {
+                max-width: 100px;
+                padding: 10px 15px;
+            }
+
+            .sub-card h3 {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Loading Animation */
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        .ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+
+        <!-- Step 1: Subscription Type Selection -->
+        <div class="step-container" id="step1">
+            <div class="step-header">
+                <span class="step-number">1</span>
+                <h2>انتخاب نوع ساب اسکریپشن</h2>
+            </div>
+
+            <div class="subscription-cards">
+                <div class="sub-card" onclick="selectSubscription('normal')">
+                    <h3>نرمال</h3>
+                </div>
+
+                <div class="sub-card" onclick="selectSubscription('full-normal')">
+                    <h3>فول ساب</h3>
+                </div>
+
+                <div class="sub-card" onclick="selectSubscription('fragment')">
+                    <h3>فرگمنت</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: App Selection (Hidden by default) -->
+        <div class="step-container hidden" id="step2">
+            <div class="step-header">
+                <span class="step-number">2</span>
+                <h2>انتخاب برنامه</h2>
+                <button class="back-btn" onclick="goBack()">← بازگشت</button>
+            </div>
+
+            <div class="selected-sub-info">
+                <div class="info-badge">
+                    <span id="selectedSubIcon"></span>
+                    <span id="selectedSubName"></span>
+                </div>
+            </div>
+
+            <!-- Android Apps -->
+            <div class="os-category">
+                <div class="os-header">
+                    <img src="images/android.png" alt="Android" class="os-icon-img">
+                    <span>Android</span>
+                </div>
+                <div class="app-grid">
+                    <button class="app-card v2rayng" onclick="openApp('v2rayNG')">
+                        <div class="app-icon">
+                            <img src="images/v2rayNG.png" alt="v2rayNG">
+                        </div>
+                        <div class="app-info">
+                            <h4>v2rayNG</h4>
+                            <p>Android</p>
+                        </div>
+                    </button>
+
+                    <button class="app-card hiddify" onclick="openApp('Hiddify')">
+                        <div class="app-icon">
+                            <img src="images/hiddify.png" alt="Hiddify">
+                        </div>
+                        <div class="app-info">
+                            <h4>Hiddify</h4>
+                            <p>همه پلتفرم ها</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- iOS Apps -->
+            <div class="os-category">
+                <div class="os-header">
+                    <img src="images/ios.png" alt="iOS" class="os-icon-img">
+                    <span>iOS</span>
+                </div>
+                <div class="app-grid">
+                    <button class="app-card foxray" onclick="openApp('FoXray')">
+                        <div class="app-icon">
+                            <img src="images/foxray.png" alt="FoXray">
+                        </div>
+                        <div class="app-info">
+                            <h4>FoXray</h4>
+                            <p>iOS</p>
+                        </div>
+                    </button>
+
+                    <button class="app-card npvtunnel" onclick="openApp('npvTunnel')">
+                        <div class="app-icon">
+                            <img src="images/npvTunnel.png" alt="npvTunnel">
+                        </div>
+                        <div class="app-info">
+                            <h4>npvTunnel</h4>
+                            <p>iOS</p>
+                        </div>
+                    </button>
+
+                    <button class="app-card streisand" onclick="openApp('Streisand')">
+                        <div class="app-icon">
+                            <img src="images/streisand.png" alt="Streisand">
+                        </div>
+                        <div class="app-info">
+                            <h4>Streisand</h4>
+                            <p>iOS</p>
+                        </div>
+                    </button>
+
+                    <button class="app-card v2box" onclick="openApp('v2box')">
+                        <div class="app-icon">
+                            <img src="images/v2box.png" alt="v2box">
+                        </div>
+                        <div class="app-info">
+                            <h4>v2box</h4>
+                            <p>iOS</p>
+                        </div>
+                    </button>
+
+                    <button class="app-card hiddify" onclick="openApp('Hiddify')">
+                        <div class="app-icon">
+                            <img src="images/hiddify.png" alt="Hiddify">
+                        </div>
+                        <div class="app-info">
+                            <h4>Hiddify</h4>
+                            <p>همه پلتفرم ها</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Windows Apps -->
+            <div class="os-category">
+                <div class="os-header">
+                    <img src="images/windows.png" alt="Windows" class="os-icon-img">
+                    <span>Windows</span>
+                </div>
+                <div class="app-grid">
+                    <button class="app-card v2rayn" onclick="openApp('v2rayN')">
+                        <div class="app-icon">
+                            <img src="images/v2rayN.png" alt="v2rayN">
+                        </div>
+                        <div class="app-info">
+                            <h4>v2rayN</h4>
+                            <p>Windows</p>
+                        </div>
+                    </button>
+
+                    <button class="app-card nekoray" onclick="openApp('Nekoray')">
+                        <div class="app-icon">
+                            <img src="images/nekoray.png" alt="Nekoray">
+                        </div>
+                        <div class="app-info">
+                            <h4>Nekoray</h4>
+                            <p>Windows</p>
+                        </div>
+                    </button>
+
+                    <button class="app-card hiddify" onclick="openApp('Hiddify')">
+                        <div class="app-icon">
+                            <img src="images/hiddify.png" alt="Hiddify">
+                        </div>
+                        <div class="app-info">
+                            <h4>Hiddify</h4>
+                            <p>همه پلتفرم ها</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manual Links Section -->
+        <div class="manual-links-section">
+            <div class="manual-links-content">
+                <h3>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        style="display: inline-block; margin-left: 8px; vertical-align: middle;">
+                        <path
+                            d="M3.9 12C3.9 10.29 5.29 8.9 7 8.9H11V7H7C4.24 7 2 9.24 2 12S4.24 17 7 17H11V15.1H7C5.29 15.1 3.9 13.71 3.9 12ZM8 13H16V11H8V13ZM17 7H13V8.9H17C18.71 8.9 20.1 10.29 20.1 12S18.71 15.1 17 15.1H13V17H17C19.76 17 22 14.76 22 12S19.76 7 17 7Z"
+                            fill="white" />
+                    </svg>
+                    لینک ساب (کپی دستی)
+                </h3>
+                <div class="links-grid">
+                    <div class="link-item">
+                        <h4>نرمال</h4>
+                        <div class="link-container">
+                            <input type="text" class="link-input" readonly
+                                value="https://5qfecjjn37hu67--50ud32k8xjqm0jt6.sowabak950.workers.dev/sub/normal/AcO9oS9I8ynnLyG5#💦 BPB Normal"
+                                id="normal-link">
+                            <button class="copy-btn" onclick="copyLink('normal-link', 'نرمال')">کپی</button>
+                        </div>
+                    </div>
+
+                    <div class="link-item">
+                        <h4>فول ساب</h4>
+                        <div class="link-container">
+                            <input type="text" class="link-input" readonly
+                                value="https://5qfecjjn37hu67--50ud32k8xjqm0jt6.sowabak950.workers.dev/sub/full-normal/AcO9oS9I8ynnLyG5?app=xray#💦 BPB Full Normal"
+                                id="full-normal-link">
+                            <button class="copy-btn" onclick="copyLink('full-normal-link', 'فول ساب')">کپی</button>
+                        </div>
+                    </div>
+
+                    <div class="link-item">
+                        <h4>فرگمنت</h4>
+                        <div class="link-container">
+                            <input type="text" class="link-input" readonly
+                                value="https://5qfecjjn37hu67--50ud32k8xjqm0jt6.sowabak950.workers.dev/sub/fragment/AcO9oS9I8ynnLyG5#💦 BPB Fragment"
+                                id="fragment-link">
+                            <button class="copy-btn" onclick="copyLink('fragment-link', 'فرگمنت')">کپی</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Section -->
+    <div class="help-content">
+        <h3>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                style="display: inline-block; margin-left: 8px; vertical-align: middle;">
+                <path
+                    d="M17 2H7C5.9 2 5 2.9 5 4V20C5 21.1 5.9 22 7 22H17C18.1 22 19 21.1 19 20V4C19 2.9 18.1 2 17 2ZM17 19H7V5H17V19Z"
+                    fill="white" />
+                <circle cx="12" cy="17" r="1" fill="white" />
+            </svg>
+            نحوه استفاده
+        </h3>
+        <div class="help-steps">
+            <div class="help-step">
+                <span class="help-number">1</span>
+                <p>نوع ساب اسکریپشن مورد نظر را انتخاب کنید</p>
+            </div>
+            <div class="help-step">
+                <span class="help-number">2</span>
+                <p>برنامه مورد نظر خود را انتخاب کنید</p>
+            </div>
+            <div class="help-step">
+                <span class="help-number">3</span>
+                <p>ساب اسکریپشن به صورت خودکار اضافه خواهد شد</p>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+
+    <script>
+
+        // Subscription URLs - برای تغییر آسان لینک‌ها
+        const SUBSCRIPTION_URLS = {
+            normal: 'https://5qfecjjn37hu67--50ud32k8xjqm0jt6.sowabak950.workers.dev/sub/normal/AcO9oS9I8ynnLyG5#%F0%9F%92%A6%20BPB%20Normal',
+            'full-normal': 'https://5qfecjjn37hu67--50ud32k8xjqm0jt6.sowabak950.workers.dev/sub/full-normal/AcO9oS9I8ynnLyG5?app=xray#%F0%9F%92%A6%20BPB%20Full%20Normal',
+            fragment: 'https://5qfecjjn37hu67--50ud32k8xjqm0jt6.sowabak950.workers.dev/sub/fragment/AcO9oS9I8ynnLyG5#%F0%9F%92%A6%20BPB%20Fragment'
+        };
+
+        // Subscription info
+        const subscriptionInfo = {
+            normal: { name: 'نرمال', icon: '' },
+            'full-normal': { name: 'فول ساب', icon: '' },
+            fragment: { name: 'فرگمنت', icon: '' }
+        };
+
+        // App URL schemes with encoding settings
+        const appSchemes = {
+            'v2rayNG': {
+                scheme: 'v2rayng://install-config?url=',
+                needsEncoding: true
+            },
+            'v2box': {
+                scheme: 'v2box://add-config?url=',
+                needsEncoding: true
+            },
+            'FoXray': {
+                scheme: 'foxray://import?url=',
+                needsEncoding: true
+            },
+            'npvTunnel': {
+                scheme: 'npv://subscribe?url=',
+                needsEncoding: true
+            },
+            'Nekoray': {
+                scheme: 'nekoray://add-server?url=',
+                needsEncoding: true
+            },
+            'Hiddify': {
+                scheme: 'hiddify://import/',
+                needsEncoding: false
+            },
+            'Streisand': {
+                scheme: 'streisand://import/',
+                needsEncoding: false
+            },
+            'v2rayN': {
+                scheme: 'v2rayn://import-subscription?url=',
+                needsEncoding: true
+            }
+        };
+
+        // Current selected subscription type
+        let selectedSubType = null;
+
+        // Select subscription type and show app selection
+        function selectSubscription(subType) {
+            selectedSubType = subType;
+
+            // Add ripple effect
+            addRippleEffect(event.currentTarget);
+
+            // Update selected subscription info
+            const info = subscriptionInfo[subType];
+            document.getElementById('selectedSubIcon').textContent = info.icon;
+            document.getElementById('selectedSubName').textContent = info.name;
+
+            // Hide step 1 and show step 2 with animation
+            setTimeout(() => {
+                document.getElementById('step1').classList.add('hidden');
+                document.getElementById('step2').classList.remove('hidden');
+
+                // Animate OS categories
+                const osCategories = document.querySelectorAll('.os-category');
+                osCategories.forEach((category, index) => {
+                    category.style.opacity = '0';
+                    category.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        category.style.transition = 'all 0.5s ease';
+                        category.style.opacity = '1';
+                        category.style.transform = 'translateY(0)';
+                    }, index * 150);
+                });
+
+                // Animate app cards within each category
+                const appCards = document.querySelectorAll('.app-card');
+                appCards.forEach((card, index) => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        card.style.transition = 'all 0.5s ease';
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 300 + (index * 80));
+                });
+            }, 300);
+        }
+
+        // Go back to subscription selection
+        function goBack() {
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step1').classList.remove('hidden');
+            selectedSubType = null;
+        }
+
+        // Open app with selected subscription
+        function openApp(appName) {
+            if (!selectedSubType) {
+                showNotification('ابتدا نوع ساب اسکریپشن را انتخاب کنید', 'error');
+                return;
+            }
+
+            const subscriptionUrl = SUBSCRIPTION_URLS[selectedSubType];
+            const appConfig = appSchemes[appName];
+
+            if (!subscriptionUrl || !appConfig) {
+                showNotification('خطا در باز کردن برنامه', 'error');
+                return;
+            }
+
+            // Add ripple effect
+            addRippleEffect(event.currentTarget);
+
+            // Show loading message
+            showNotification(`در حال باز کردن ${appName}...`, 'info');
+
+            // Track if user left the page (app opened)
+            let appOpened = false;
+            let timeoutId;
+            let visibilityTimeoutId;
+            let blurTimeoutId;
+
+            // Multiple event listeners for better detection
+            const handleVisibilityChange = () => {
+                if (document.hidden) {
+                    appOpened = true;
+                    clearAllTimeouts();
+                    showNotification(`✅ ساب اسکریپشن با موفقیت به ${appName} اضافه شد`, 'success');
+                }
+            };
+
+            const handlePageBlur = () => {
+                blurTimeoutId = setTimeout(() => {
+                    if (!appOpened) {
+                        appOpened = true;
+                        clearAllTimeouts();
+                        showNotification(`✅ ساب اسکریپشن با موفقیت به ${appName} اضافه شد`, 'success');
+                    }
+                }, 500);
+            };
+
+            const handlePageFocus = () => {
+                if (blurTimeoutId) {
+                    clearTimeout(blurTimeoutId);
+                }
+            };
+
+            const clearAllTimeouts = () => {
+                if (timeoutId) clearTimeout(timeoutId);
+                if (visibilityTimeoutId) clearTimeout(visibilityTimeoutId);
+                if (blurTimeoutId) clearTimeout(blurTimeoutId);
+                document.removeEventListener('visibilitychange', handleVisibilityChange);
+                window.removeEventListener('blur', handlePageBlur);
+                window.removeEventListener('focus', handlePageFocus);
+            };
+
+            // Add event listeners
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+            window.addEventListener('blur', handlePageBlur);
+            window.addEventListener('focus', handlePageFocus);
+
+            // Function to try opening with fallback
+            const tryOpenApp = (url, attempt = 1) => {
+                try {
+                    // Try multiple methods to open the URL
+                    const success = attemptOpenUrl(url);
+
+                    if (success) {
+                        // Set timeout to check if app opened
+                        timeoutId = setTimeout(() => {
+                            if (!appOpened && attempt === 1) {
+                                // Try alternative schemes for specific apps
+                                let fallbackUrl = null;
+                                if (appName === 'npvTunnel') {
+                                    fallbackUrl = 'npvtunnel://subscribe?url=' + encodeURIComponent(subscriptionUrl);
+                                } else if (appName === 'Streisand') {
+                                    fallbackUrl = 'streisand://subscribe?url=' + encodeURIComponent(subscriptionUrl);
+                                } else if (appName === 'v2rayN') {
+                                    fallbackUrl = 'v2rayn://add-server?url=' + encodeURIComponent(subscriptionUrl);
+                                } else if (appName === 'v2box') {
+                                    // Try with import format
+                                    fallbackUrl = 'v2box://import?url=' + encodeURIComponent(subscriptionUrl);
+                                } else if (appConfig.needsEncoding) {
+                                    fallbackUrl = appConfig.scheme + subscriptionUrl;
+                                }
+
+                                if (fallbackUrl) {
+                                    showNotification(`تلاش با روش جایگزین...`, 'info');
+                                    tryOpenApp(fallbackUrl, 2);
+                                    return;
+                                }
+                            }
+
+                            if (!appOpened && attempt < 3) {
+                                // Try one more time with alternative URLs for problematic apps
+                                if (appName === 'npvTunnel' && attempt === 2) {
+                                    const directUrl = 'npv-tunnel://subscribe?url=' + encodeURIComponent(subscriptionUrl);
+                                    showNotification(`تلاش نهایی...`, 'info');
+                                    tryOpenApp(directUrl, 3);
+                                    return;
+                                } else if (appName === 'v2rayN' && attempt === 2) {
+                                    const directUrl = 'v2rayn://import?url=' + encodeURIComponent(subscriptionUrl);
+                                    showNotification(`تلاش نهایی...`, 'info');
+                                    tryOpenApp(directUrl, 3);
+                                    return;
+                                } else if (appName === 'v2box' && attempt === 2) {
+                                    // Try with direct import without parameters
+                                    const directUrl = 'v2box://import/' + encodeURIComponent(subscriptionUrl);
+                                    showNotification(`تلاش نهایی...`, 'info');
+                                    tryOpenApp(directUrl, 3);
+                                    return;
+                                }
+                            }
+
+                            if (!appOpened) {
+                                clearAllTimeouts();
+                                handleAppOpenFailure(appName, subscriptionUrl);
+                            }
+                        }, attempt === 1 ? 2000 : 2500);
+
+                        // Additional check after longer timeout
+                        visibilityTimeoutId = setTimeout(() => {
+                            if (!appOpened) {
+                                // Try to detect if we're still on the same page
+                                if (document.hasFocus() && document.visibilityState === 'visible') {
+                                    clearAllTimeouts();
+                                    handleAppOpenFailure(appName, subscriptionUrl);
+                                }
+                            }
+                        }, 4000);
+                    } else {
+                        throw new Error('Failed to open URL');
+                    }
+
+                } catch (error) {
+                    if (attempt < 3) {
+                        // Try alternative approaches
+                        let fallbackUrl = null;
+                        if (appName === 'npvTunnel') {
+                            if (attempt === 1) {
+                                fallbackUrl = 'npvtunnel://subscribe?url=' + encodeURIComponent(subscriptionUrl);
+                            } else if (attempt === 2) {
+                                fallbackUrl = 'npv-tunnel://subscribe?url=' + encodeURIComponent(subscriptionUrl);
+                            }
+                        } else if (appName === 'Streisand') {
+                            fallbackUrl = 'streisand://subscribe?url=' + encodeURIComponent(subscriptionUrl);
+                        } else if (appName === 'v2rayN') {
+                            if (attempt === 1) {
+                                fallbackUrl = 'v2rayn://add-server?url=' + encodeURIComponent(subscriptionUrl);
+                            } else if (attempt === 2) {
+                                fallbackUrl = 'v2rayn://import?url=' + encodeURIComponent(subscriptionUrl);
+                            }
+                        } else if (appName === 'v2box') {
+                            if (attempt === 1) {
+                                fallbackUrl = 'v2box://import?url=' + encodeURIComponent(subscriptionUrl);
+                            } else if (attempt === 2) {
+                                // Try with direct import without parameters
+                                fallbackUrl = 'v2box://import/' + encodeURIComponent(subscriptionUrl);
+                            }
+                        } else if (appConfig.needsEncoding && attempt === 1) {
+                            fallbackUrl = appConfig.scheme + subscriptionUrl;
+                        }
+
+                        if (fallbackUrl) {
+                            tryOpenApp(fallbackUrl, attempt + 1);
+                        } else {
+                            clearAllTimeouts();
+                            handleAppOpenFailure(appName, subscriptionUrl);
+                        }
+                    } else {
+                        clearAllTimeouts();
+                        handleAppOpenFailure(appName, subscriptionUrl);
+                    }
+                }
+            };
+
+            // Multiple methods to attempt opening the URL
+            const attemptOpenUrl = (url) => {
+                try {
+                    // Method 1: Direct window.location
+                    window.location.href = url;
+                    return true;
+                } catch (e1) {
+                    try {
+                        // Method 2: window.open
+                        const popup = window.open(url, '_self');
+                        if (popup) {
+                            return true;
+                        }
+                    } catch (e2) {
+                        try {
+                            // Method 3: Create invisible link and click
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.style.display = 'none';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            return true;
+                        } catch (e3) {
+                            return false;
+                        }
+                    }
+                }
+                return false;
+            };
+
+            // Handle app open failure
+            const handleAppOpenFailure = (appName, subscriptionUrl) => {
+                showNotification(`⚠️ ${appName} باز نشد - احتمالاً نصب نیست`, 'error');
+
+                // Copy link as fallback
+                copyToClipboard(subscriptionUrl);
+                setTimeout(() => {
+                    showNotification('📋 لینک ساب کپی شد - آن را دستی در برنامه اضافه کنید', 'info');
+                }, 1500);
+
+                // Show additional help
+                setTimeout(() => {
+                    showNotification(`💡 برای ${appName}: لینک را در تنظیمات برنامه اضافه کنید`, 'info');
+                }, 3000);
+            };
+
+            // Create the final URL with proper encoding based on app requirements
+            const finalUrl = appConfig.needsEncoding
+                ? appConfig.scheme + encodeURIComponent(subscriptionUrl)
+                : appConfig.scheme + subscriptionUrl;
+
+            // Start the process
+            tryOpenApp(finalUrl);
+        }
+
+        // Copy link function for manual links section
+        function copyLink(linkId, linkName) {
+            const linkInput = document.getElementById(linkId);
+            const text = linkInput.value;
+
+            // Select the text
+            linkInput.select();
+            linkInput.setSelectionRange(0, 99999); // For mobile devices
+
+            // Copy to clipboard
+            copyToClipboard(text);
+
+            // Show success notification
+            showNotification(`✅ لینک ${linkName} کپی شد!`, 'success');
+
+            // Add visual feedback to button
+            const copyBtn = event.target;
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = '✓ کپی شد';
+            copyBtn.style.background = 'linear-gradient(135deg, #34D399, #10B981)';
+
+            setTimeout(() => {
+                copyBtn.textContent = originalText;
+                copyBtn.style.background = 'linear-gradient(135deg, #007AFF, #5AC8FA)';
+            }, 2000);
+        }
+
+        // Copy text to clipboard
+        function copyToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text);
+            } else {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                document.execCommand('copy');
+                textArea.remove();
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+
+            const colors = {
+                success: 'rgba(34, 197, 94, 0.9)',
+                error: 'rgba(239, 68, 68, 0.9)',
+                info: 'rgba(59, 130, 246, 0.9)'
+            };
+
+            notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${colors[type]};
+        color: white;
+        padding: 15px 25px;
+        border-radius: 12px;
+        backdrop-filter: blur(20px);
+        z-index: 1000;
+        font-weight: 500;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        transform: translateX(100%);
+        transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    `;
+
+            document.body.appendChild(notification);
+
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 400);
+            }, 3000);
+        }
+
+        // Add ripple effect to clicked elements
+        function addRippleEffect(element) {
+            const ripple = document.createElement('span');
+            const rect = element.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = event.clientX - rect.left - size / 2;
+            const y = event.clientY - rect.top - size / 2;
+
+            ripple.className = 'ripple-effect';
+            ripple.style.cssText = `
+        width: ${size}px;
+        height: ${size}px;
+        left: ${x}px;
+        top: ${y}px;
+    `;
+
+            element.style.position = 'relative';
+            element.style.overflow = 'hidden';
+            element.appendChild(ripple);
+
+            setTimeout(() => {
+                if (element.contains(ripple)) {
+                    ripple.remove();
+                }
+            }, 600);
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add smooth animations to cards on load
+            const subCards = document.querySelectorAll('.sub-card');
+            subCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+
+            // Add hover effects
+            const allCards = document.querySelectorAll('.sub-card, .app-card');
+            allCards.forEach(card => {
+                card.addEventListener('mouseenter', function () {
+                    this.style.transform = this.classList.contains('sub-card')
+                        ? 'translateY(-8px) scale(1.02)'
+                        : 'translateY(-5px)';
+                });
+
+                card.addEventListener('mouseleave', function () {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        });
+
+        // Handle keyboard navigation
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && !document.getElementById('step2').classList.contains('hidden')) {
+                goBack();
+            }
+        });
+
+    </script>
+</body>
+
+</html>
